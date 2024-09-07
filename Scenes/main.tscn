@@ -1,0 +1,41 @@
+[gd_scene load_steps=3 format=3 uid="uid://dcfbkt35an77n"]
+
+[ext_resource type="Script" path="res://Scripts/main.gd" id="1_pwtki"]
+[ext_resource type="PackedScene" uid="uid://doq7whiaw81ay" path="res://Scenes/window_setting.tscn" id="2_ep174"]
+
+[node name="Main" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("1_pwtki")
+
+[node name="Display" type="TextureRect" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+expand_mode = 1
+
+[node name="Label" type="Label" parent="Display"]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -23.0
+offset_right = 40.0
+grow_vertical = 0
+theme_override_colors/font_color = Color(1, 1, 1, 0.776471)
+text = "Press ESC to open setting"
+
+[node name="Window_Setting" parent="." instance=ExtResource("2_ep174")]
+unique_name_in_owner = true
+title = "TCapture Setting"
+visible = false

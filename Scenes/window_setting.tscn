@@ -1,0 +1,201 @@
+[gd_scene load_steps=3 format=3 uid="uid://doq7whiaw81ay"]
+
+[ext_resource type="Script" path="res://Scripts/Setting.gd" id="1_sf7f6"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fmjby"]
+bg_color = Color(0.2484, 0.2484, 0.2484, 1)
+
+[node name="Window_Setting" type="Window"]
+title = "TCaptureShare Setting"
+initial_position = 2
+size = Vector2i(1152, 648)
+borderless = true
+script = ExtResource("1_sf7f6")
+
+[node name="Setting" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="Panel" parent="Setting"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_fmjby")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Setting/Panel"]
+layout_mode = 2
+offset_left = 10.0
+offset_top = 10.0
+offset_right = 1142.0
+offset_bottom = 638.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Setting/Panel/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Setting/Panel/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="OptionButton" type="OptionButton" parent="Setting/Panel/HBoxContainer/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+item_count = 2
+selected = 0
+popup/item_0/text = "Title"
+popup/item_0/id = 0
+popup/item_1/text = "PID"
+popup/item_1/id = 1
+
+[node name="LineEdit_title" type="LineEdit" parent="Setting/Panel/HBoxContainer/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Application Title"
+
+[node name="MarginContainer" type="MarginContainer" parent="Setting/Panel/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="DisplaySetting" type="TextureRect" parent="Setting/Panel/HBoxContainer/VBoxContainer/MarginContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+expand_mode = 1
+
+[node name="Crop" type="ReferenceRect" parent="Setting/Panel/HBoxContainer/VBoxContainer/MarginContainer/DisplaySetting"]
+layout_mode = 1
+editor_only = false
+
+[node name="SettingContainer" type="VBoxContainer" parent="Setting/Panel/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="Button_capture" type="Button" parent="Setting/Panel/HBoxContainer/SettingContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Capture"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Setting/Panel/HBoxContainer/SettingContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Setting/Panel/HBoxContainer/SettingContainer/HBoxContainer"]
+layout_mode = 2
+text = "FPS:"
+
+[node name="SpinBox_fps" type="SpinBox" parent="Setting/Panel/HBoxContainer/SettingContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 10
+alignment = 2
+select_all_on_focus = true
+
+[node name="______Crop_____" type="Label" parent="Setting/Panel/HBoxContainer/SettingContainer"]
+layout_mode = 2
+text = "______Crop______"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="Setting/Panel/HBoxContainer/SettingContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Setting/Panel/HBoxContainer/SettingContainer/HBoxContainer2"]
+layout_mode = 2
+text = "x:"
+
+[node name="SpinBox_x" type="SpinBox" parent="Setting/Panel/HBoxContainer/SettingContainer/HBoxContainer2"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 10
+select_all_on_focus = true
+
+[node name="HBoxContainer3" type="HBoxContainer" parent="Setting/Panel/HBoxContainer/SettingContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Setting/Panel/HBoxContainer/SettingContainer/HBoxContainer3"]
+layout_mode = 2
+text = "y:"
+
+[node name="SpinBox_y" type="SpinBox" parent="Setting/Panel/HBoxContainer/SettingContainer/HBoxContainer3"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 10
+select_all_on_focus = true
+
+[node name="HBoxContainer4" type="HBoxContainer" parent="Setting/Panel/HBoxContainer/SettingContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Setting/Panel/HBoxContainer/SettingContainer/HBoxContainer4"]
+layout_mode = 2
+text = "w:"
+
+[node name="SpinBox_w" type="SpinBox" parent="Setting/Panel/HBoxContainer/SettingContainer/HBoxContainer4"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 10
+select_all_on_focus = true
+
+[node name="HBoxContainer5" type="HBoxContainer" parent="Setting/Panel/HBoxContainer/SettingContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Setting/Panel/HBoxContainer/SettingContainer/HBoxContainer5"]
+layout_mode = 2
+text = "h:"
+
+[node name="SpinBox_h" type="SpinBox" parent="Setting/Panel/HBoxContainer/SettingContainer/HBoxContainer5"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 10
+select_all_on_focus = true
+
+[node name="Button_clear" type="Button" parent="Setting/Panel/HBoxContainer/SettingContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Clear"
+
+[node name="_____________" type="Label" parent="Setting/Panel/HBoxContainer/SettingContainer"]
+layout_mode = 2
+text = "_________________"
+horizontal_alignment = 1
+
+[node name="CheckBox_fullscreen" type="CheckBox" parent="Setting/Panel/HBoxContainer/SettingContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Full Screen"
+
+[node name="CheckBox_on_top" type="CheckBox" parent="Setting/Panel/HBoxContainer/SettingContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Alway on top"
+
+[node name="Button_save" type="Button" parent="Setting/Panel/HBoxContainer/SettingContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 10
+text = "Save"
+
+[node name="Button_close" type="Button" parent="Setting/Panel/HBoxContainer/SettingContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 0
+text = "Close
+"
+
+[node name="Button_quit" type="Button" parent="Setting/Panel/HBoxContainer/SettingContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 2
+text = "Quit"
