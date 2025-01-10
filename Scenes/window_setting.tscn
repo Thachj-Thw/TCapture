@@ -1,15 +1,30 @@
-[gd_scene load_steps=3 format=3 uid="uid://doq7whiaw81ay"]
+[gd_scene load_steps=5 format=3 uid="uid://doq7whiaw81ay"]
 
 [ext_resource type="Script" path="res://Scripts/Setting.gd" id="1_sf7f6"]
+[ext_resource type="Texture2D" uid="uid://bll4e46jws4x8" path="res://Assets/[CITYPNG.COM]HD Settings, White Line Icon Transparent Background - 800x800.png" id="2_1wthk"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fmjby"]
-bg_color = Color(0.2484, 0.2484, 0.2484, 1)
+bg_color = Color(0.158472, 0.158472, 0.158472, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_eyf73"]
+bg_color = Color(0.129558, 0.129558, 0.129558, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
 
 [node name="Window_Setting" type="Window"]
+transparent_bg = true
 title = "TCaptureShare Setting"
 initial_position = 2
 size = Vector2i(1152, 648)
 borderless = true
+always_on_top = true
+transparent = true
 script = ExtResource("1_sf7f6")
 
 [node name="Setting" type="Control" parent="."]
@@ -19,22 +34,40 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+size_flags_vertical = 3
 
 [node name="Panel" type="Panel" parent="Setting"]
 layout_mode = 1
-anchors_preset = 15
+anchors_preset = -1
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_top = 15.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_fmjby")
 
+[node name="TextureRect" type="TextureRect" parent="Setting/Panel"]
+modulate = Color(1, 1, 1, 0.0862745)
+custom_minimum_size = Vector2(500, 500)
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 0
+grow_vertical = 0
+texture = ExtResource("2_1wthk")
+expand_mode = 1
+
 [node name="HBoxContainer" type="HBoxContainer" parent="Setting/Panel"]
-layout_mode = 2
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
 offset_left = 10.0
-offset_top = 10.0
-offset_right = 1142.0
-offset_bottom = 638.0
+offset_top = 25.0
+offset_right = -10.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 10
@@ -61,6 +94,7 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 placeholder_text = "Application Title"
+select_all_on_focus = true
 
 [node name="MarginContainer" type="MarginContainer" parent="Setting/Panel/HBoxContainer/VBoxContainer"]
 layout_mode = 2
@@ -70,10 +104,15 @@ theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
 
+[node name="Label_notification" type="Label" parent="Setting/Panel/HBoxContainer/VBoxContainer/MarginContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 50
+
 [node name="DisplaySetting" type="TextureRect" parent="Setting/Panel/HBoxContainer/VBoxContainer/MarginContainer"]
 unique_name_in_owner = true
 layout_mode = 2
-size_flags_vertical = 3
 expand_mode = 1
 
 [node name="Crop" type="ReferenceRect" parent="Setting/Panel/HBoxContainer/VBoxContainer/MarginContainer/DisplaySetting"]
@@ -82,6 +121,8 @@ editor_only = false
 
 [node name="SettingContainer" type="VBoxContainer" parent="Setting/Panel/HBoxContainer"]
 layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 0
 theme_override_constants/separation = 5
 
 [node name="Button_capture" type="Button" parent="Setting/Panel/HBoxContainer/SettingContainer"]
@@ -105,7 +146,7 @@ select_all_on_focus = true
 
 [node name="______Crop_____" type="Label" parent="Setting/Panel/HBoxContainer/SettingContainer"]
 layout_mode = 2
-text = "______Crop______"
+text = "_______Crop_______"
 horizontal_alignment = 1
 vertical_alignment = 1
 
@@ -168,18 +209,40 @@ text = "Clear"
 
 [node name="_____________" type="Label" parent="Setting/Panel/HBoxContainer/SettingContainer"]
 layout_mode = 2
-text = "_________________"
+text = "___________________"
 horizontal_alignment = 1
+
+[node name="StretchMode" type="Label" parent="Setting/Panel/HBoxContainer/SettingContainer"]
+layout_mode = 2
+text = "Stretch mode"
+horizontal_alignment = 1
+
+[node name="OptionButton_stretch_mode" type="OptionButton" parent="Setting/Panel/HBoxContainer/SettingContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+item_count = 3
+selected = 2
+popup/item_0/text = "Scale"
+popup/item_0/id = 0
+popup/item_1/text = "Tile"
+popup/item_1/id = 1
+popup/item_2/text = "Keep Center"
+popup/item_2/id = 2
 
 [node name="CheckBox_fullscreen" type="CheckBox" parent="Setting/Panel/HBoxContainer/SettingContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Full Screen"
 
-[node name="CheckBox_on_top" type="CheckBox" parent="Setting/Panel/HBoxContainer/SettingContainer"]
+[node name="CheckBox_flip_h" type="CheckBox" parent="Setting/Panel/HBoxContainer/SettingContainer"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "Alway on top"
+text = "Flip H"
+
+[node name="CheckBox_flip_v" type="CheckBox" parent="Setting/Panel/HBoxContainer/SettingContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Flip V"
 
 [node name="Button_save" type="Button" parent="Setting/Panel/HBoxContainer/SettingContainer"]
 unique_name_in_owner = true
@@ -199,3 +262,28 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 2
 text = "Quit"
+
+[node name="Panel2" type="Panel" parent="Setting"]
+custom_minimum_size = Vector2(300, 35)
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+grow_horizontal = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_eyf73")
+
+[node name="Label" type="Label" parent="Setting/Panel2"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -32.5
+offset_top = -11.5
+offset_right = 32.5
+offset_bottom = 11.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 25
+text = "SETTING"

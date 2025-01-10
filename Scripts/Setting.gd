@@ -1,19 +1,24 @@
 extends Window
+class_name Setting
 
-var parent: Node
-var window_title: String = ""
+
+var display: Main
+var hwnd_mode: int = 0
+var hwnd_value: String = ""
 var crop: Rect2i = Rect2i(0, 0, 0, 0)
 var fps: int = 45
 var img: Image
 var img_width: int = 0
 var img_height: int = 0
 var holding: bool = false
-var scale_x: float = 0.0
-var scale_y: float = 0.0
-var display_rect: Rect2
+var scale_x: float = 1.0
+var scale_y: float = 1.0
 var event_rect: Rect2
 var fullscreen: bool = false
-var alway_on_top: bool = false
+var stretch_mode: int = 0
+var flip_h: bool = false
+var flip_v: bool = false
+
 
 @onready var display_setting: TextureRect = %DisplaySetting
 @onready var line_edit_title: LineEdit = %LineEdit_title
@@ -30,55 +35,74 @@ var alway_on_top: bool = false
 @onready var button_quit: Button = %Button_quit
 @onready var option_button: OptionButton = %OptionButton
 @onready var check_box_fullscreen: CheckBox = %CheckBox_fullscreen
-@onready var check_box_on_top: CheckBox = %CheckBox_on_top
+@onready var label_notification: Label = %Label_notification
+@onready var option_button_stretch_mode: OptionButton = %OptionButton_stretch_mode
+@onready var check_box_flip_h: CheckBox = %CheckBox_flip_h
+@onready var check_box_flip_v: CheckBox = %CheckBox_flip_v
+
+
+var config_manager = ConfigManager.new(self)
 
 
 func _ready() -> void:
-	display_crop.size = Vector2.ZERO
+	config_manager.load_config()
+	print(scale_x)
+	option_button.get_popup().set_flag(Window.FLAG_ALWAYS_ON_TOP, true)
+	option_button_stretch_mode.get_popup().set_flag(Window.FLAG_ALWAYS_ON_TOP, true)
 	button_capture.pressed.connect(on_button_capture_clicked)
 	button_clear.pressed.connect(on_button_clear_clicked)
 	button_save.pressed.connect(on_button_save_clicked)
 	button_close.pressed.connect(on_button_close_clicked)
 	button_quit.pressed.connect(on_button_quit_clicked)
 	option_button.item_selected.connect(on_option_button_item_slected)
-	check_box_fullscreen.toggled.connect(func(is_on): fullscreen = is_on)
-	check_box_on_top.toggled.connect(func(is_on): alway_on_top = is_on)
-	# default value
-	spin_box_fps.value = 45
-	spin_box_x.value = 0
-	spin_box_y.value = 0
-	spin_box_w.value = 0
-	spin_box_h.value = 0
+	check_box_fullscreen.toggled.connect(func(is_on: bool): fullscreen = is_on)
+	spin_box_x.value_changed.connect(on_spin_box_x_value_changed)
+	spin_box_y.value_changed.connect(on_spin_box_y_value_changed)
+	spin_box_w.value_changed.connect(on_spin_box_w_value_changed)
+	spin_box_h.value_changed.connect(on_spin_box_h_value_changed)
+	line_edit_title.text_submitted.connect(func(_t: String): on_button_capture_clicked())
+	option_button_stretch_mode.item_selected.connect(func(i: int): stretch_mode = i)
+	check_box_flip_h.toggled.connect(func(is_on: bool): flip_h = is_on)
+	check_box_flip_v.toggled.connect(func(is_on: bool): flip_v = is_on)
 
 
 func set_hwin_hwnd(text: String) -> void:
 	if text:
-		if option_button.selected == 0:
-			parent.hwin.create_from_title(text)
+		if hwnd_mode == 0:
+			display.hwin.create_from_title(text)
 			return
-		if option_button.selected == 1 and text.is_valid_int():
-			parent.hwin.create_from_pid(int(text))
+		elif hwnd_mode == 1 and text.is_valid_int():
+			display.hwin.create_from_pid(int(text))
 			return
-	parent.hwin.hwnd = 0
+	display.hwin.hwnd = 0
 
 
 func on_button_capture_clicked() -> void:
 	set_hwin_hwnd(line_edit_title.text)
-	parent.hwin.crop.size = Vector2i(0, 0)
-	img = parent.hwin.screenshot()
-	img_width = img.get_width()
-	img_height = img.get_height()
-	spin_box_x.max_value = img_width - 1
-	spin_box_y.max_value = img_height - 1
-	spin_box_w.max_value = img_width - 1
-	spin_box_h.max_value = img_height - 1
-	display_setting.texture = ImageTexture.create_from_image(img)
-	display_rect = display_setting.get_rect()
-	display_rect.position = display_setting.global_position
+	if line_edit_title.text and display.hwin.hwnd == 0:
+		label_notification.text = "Window not found"
+		display_setting.texture = null
+		img = Image.new()
+		update_display_value()
+		return
+	display.hwin.crop.size = Vector2i(0, 0)
+	img = display.hwin.screenshot()
+	if img.is_empty():
+		label_notification.text = "Image is empty"
+		display_setting.texture = null
+	else:
+		display_setting.texture = ImageTexture.create_from_image(img)
+		print("display size ",display_setting.size)
+	update_display_value()
+
+
+func update_display_value() -> void:
+	spin_box_x.max_value = img_width
+	spin_box_y.max_value = img_height
+	spin_box_w.max_value = img_width
+	spin_box_h.max_value = img_height
 	event_rect = display_setting.get_parent().get_rect()
 	event_rect.position = display_setting.get_parent().global_position
-	scale_x = img_width / display_rect.size.x
-	scale_y = img_height / display_rect.size.y
 
 
 func on_button_clear_clicked() -> void:
@@ -90,25 +114,35 @@ func on_button_clear_clicked() -> void:
 
 
 func on_button_save_clicked() -> void:
-	window_title = line_edit_title.text
-	crop.position.x = spin_box_x.value
-	crop.position.y = spin_box_y.value
-	crop.size.x = spin_box_w.value
-	crop.size.y = spin_box_h.value
-	fps = spin_box_fps.value
+	hwnd_mode = option_button.selected
+	hwnd_value = line_edit_title.text
+	crop = convert_rect(display_crop.get_rect(), img.get_size(), display_setting.size)
+	fps = roundi(spin_box_fps.value)
+	update_display()
+	on_button_close_clicked()
+	config_manager.save_config()
+
+func update_display() -> void:
+	match stretch_mode:
+		0:
+			display.display.stretch_mode = TextureRect.STRETCH_SCALE
+		1:
+			display.display.stretch_mode = TextureRect.STRETCH_TILE
+		2:
+			display.display.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	display.display.flip_h = flip_h
+	display.display.flip_v = flip_v
 	if fullscreen:
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
 	else:
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
-	ProjectSettings.set_setting("display/window/size/always_on_top", alway_on_top)
-	on_button_close_clicked()
 
 
 func on_button_close_clicked() -> void:
-	set_hwin_hwnd(window_title)
-	parent.hwin.crop = crop
+	set_hwin_hwnd(hwnd_value)
+	display.hwin.crop = crop
 	self.hide()
-	parent.set_process(true)
+	display.set_process(true)
 
 
 func on_button_quit_clicked() -> void:
@@ -122,26 +156,48 @@ func on_option_button_item_slected(index: int) -> void:
 		line_edit_title.placeholder_text = "Application PID"
 
 
+func on_spin_box_x_value_changed(value: float) -> void:
+	spin_box_w.max_value = img_width - value
+	display_crop.position.x = value / scale_x
+
+func on_spin_box_y_value_changed(value: float) -> void:
+	spin_box_h.max_value = img_height - value
+	display_crop.position.y = value / scale_y
+
+func on_spin_box_w_value_changed(value: float) -> void:
+	display_crop.size.x = roundi(value / scale_x)
+	display_crop.visible = value + spin_box_h.value != 0
+
+func on_spin_box_h_value_changed(value: float) -> void:
+	display_crop.size.y = roundi(value / scale_y)
+	display_crop.visible = value + spin_box_w.value != 0
+
+func convert_rect(rect: Rect2, size1: Vector2, size2: Vector2) -> Rect2i:
+	var c: Rect2i
+	var scale_x: float = size1.x / size2.x
+	var scale_y: float = size1.y / size2.y
+	c.position.x = roundi(rect.position.x * scale_x)
+	c.position.y = roundi(rect.position.y * scale_y)
+	c.size.x = roundi(rect.size.x * scale_x)
+	c.size.x = roundi(rect.size.x * scale_y)
+	return c
+
 func open() -> void:
-	line_edit_title.text = window_title
+	display.set_process(false)
+	option_button.selected = hwnd_mode
+	line_edit_title.text = hwnd_value
+	on_button_capture_clicked()
 	spin_box_fps.value = fps
 	spin_box_x.value = crop.position.x
 	spin_box_y.value = crop.position.y
 	spin_box_w.value = crop.size.x
-	spin_box_w.value = crop.size.y
-	if crop.size != Vector2i.ZERO:
-		display_crop.position.x = crop.position.x / scale_x
-		display_crop.position.y = crop.position.y / scale_y
-		display_crop.size.x = crop.size.x / scale_x
-		display_crop.size.y = crop.size.y / scale_y
-		display_crop.show()
-	else:
-		display_crop.hide()
+	spin_box_h.value = crop.size.y
 	check_box_fullscreen.button_pressed = fullscreen
-	check_box_on_top.button_pressed = alway_on_top
-	ProjectSettings.set_setting("display/window/size/always_on_top", false)
+	line_edit_title.grab_focus()
+	option_button_stretch_mode.select(stretch_mode)
+	check_box_flip_h.button_pressed = flip_h
+	check_box_flip_v.button_pressed = flip_v
 	self.show()
-	parent.set_process(false)
 
 func close() -> void:
 	on_button_close_clicked()
@@ -154,21 +210,17 @@ func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if event.is_pressed() and not holding:
 			if event_rect.has_point(event.position):
-				display_crop.show()
-				display_crop.global_position.x = clamp(event.position.x, display_rect.position.x, display_rect.size.x)
-				display_crop.global_position.y = clamp(event.position.y, display_rect.position.y, display_rect.size.y)
-				display_crop.size = Vector2.ZERO
-				spin_box_x.value = (event.position.x - display_rect.position.x) * scale_x
-				spin_box_y.value = (event.position.y - display_rect.position.y) * scale_y
-				spin_box_w.value = display_crop.size.x * scale_x
-				spin_box_h.value = display_crop.size.y * scale_y
+				var crop_pos : Vector2i = event.position - display_setting.global_position
+				spin_box_x.value = crop_pos.x * scale_x
+				spin_box_y.value = crop_pos.y * scale_y
+				spin_box_w.value = 0
+				spin_box_h.value = 0
 				holding = true
 		else:
 			holding = false
 			if display_crop.size == Vector2.ZERO:
 				display_crop.hide()
 	elif event is InputEventMouseMotion and holding:
-		display_crop.size.x = clamp(event.position.x - display_crop.global_position.x, 0, display_rect.size.x - display_crop.position.x - 1)
-		display_crop.size.y = clamp(event.position.y - display_crop.global_position.y, 0, display_rect.size.y - display_crop.position.y - 1)
-		spin_box_w.value = display_crop.size.x * scale_x
-		spin_box_h.value = display_crop.size.y * scale_y
+		var crop_size : Vector2i = event.position - display_crop.global_position
+		spin_box_w.value = crop_size.x * scale_x
+		spin_box_h.value = crop_size.y * scale_y
